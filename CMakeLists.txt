@@ -22,8 +22,14 @@ set_target_properties(microgl PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(microgl PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})
 set_target_properties(microgl PROPERTIES PUBLIC_HEADER include/microgl.h)
 
+target_link_libraries(microgl 
+    pico_stdlib 
+    hardware_i2c
+)
+
 include_directories(
     /usr/arm-none-eabi/include
     /usr/arm-none-eabi/include/c++/13.2.0
     /usr/arm-none-eabi/include/c++/13.2.0/arm-none-eabi
+    ./include
 )
