@@ -26,3 +26,7 @@ cmake --build build
 ```
 
 The static library will be located at build/libmicrogl.a
+
+## License
+
+In order to match the license of the [pico-sdk](https://github.com/raspberrypi/pico-sdk), microgl is licensed under the BSD-3-Clause.

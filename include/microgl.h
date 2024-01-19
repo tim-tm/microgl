@@ -3,8 +3,8 @@
  *  @brief Microgl is an embedded graphics library for the Raspberry PI Pico.
  *         It aims to provide access to different displays, such as for example sh1106 based displays. 
  * 
- *  Legal:
- *    Copyright 2020 (c) 2020 Tim Teichmann and Raspberry Pi (Trading) Ltd.
+ *  BSD-3-Clause license:
+ *    Copyright 2024 (c) Tim Teichmann and 2020 Raspberry Pi (Trading) Ltd.
  *  
  *    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
  *    following conditions are met:
