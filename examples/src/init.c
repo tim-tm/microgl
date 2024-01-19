@@ -24,6 +24,19 @@ int main(void) {
     while (1) {
         // Drawing a pixel at 100|10
         mgl_display_draw_pixel(&disp, 100, 10);
+        // Drawing a line from 20|20 to 25|25
+        mgl_display_draw_line(&disp, 20, 20, 25, 25);
+        // Filling a rect at 5|5 of size 10|10
+        mgl_display_draw_rect(&disp, 5, 5, 10, 10, true);
+        // Drawing a rect outline at 50|5 of size 10|10
+        mgl_display_draw_rect(&disp, 50, 5, 10, 10, false);
+        // Pushing to the display
+        mgl_display_render(&disp);
+        // Sleeping
+        sleep_ms(10000);
+
+        // Clear the display
+        mgl_display_fill(&disp, 0x00);
         // Pushing to the display
         mgl_display_render(&disp);
         // Sleeping

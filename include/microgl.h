@@ -145,6 +145,34 @@ void mgl_display_render(mgl_display* display);
  */
 void mgl_display_draw_pixel(mgl_display* display, uint32_t x, uint32_t y);
 
+/**
+ *  mgl_display_draw_line
+ *  
+ *  @brief Draw a line into the framebuffer
+ *  NOTE: Any drawing function (mgl_display_draw_...)
+ *        will simply change memory of the framebuffer.
+ *        Call mgl_display_render in order to make such changes visible on the display.
+ */
+void mgl_display_draw_line(mgl_display* display, uint32_t from_x, uint32_t from_y, uint32_t to_x, uint32_t to_y);
+
+/**
+ *  mgl_display_draw_rect
+ *  
+ *  @brief Draw a rectangle into the framebuffer
+ *  NOTE: Any drawing function (mgl_display_draw_...)
+ *        will simply change memory of the framebuffer.
+ *        Call mgl_display_render in order to make such changes visible on the display.
+ */
+void mgl_display_draw_rect(mgl_display* display, uint32_t x, uint32_t y, uint32_t width, uint32_t height, bool fill);
+
+/**
+ *  mgl_display_fill
+ *  
+ *  @brief Fill the entire framebuffer with "value"
+ *  NOTE: Call mgl_display_render in order to make changes visible on the display.
+ */
+void mgl_display_fill(mgl_display* display, uint8_t value);
+
 #ifdef __cplusplus
 }
 #endif

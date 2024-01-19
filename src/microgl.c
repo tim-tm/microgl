@@ -139,3 +139,82 @@ void mgl_display_draw_pixel(mgl_display* display, uint32_t x, uint32_t y) {
     }
     display->framebuffer[x + (y/8) * display->width] |= 1 << (y % 8);
 }
+
+void mgl_display_draw_line(mgl_display* display, uint32_t from_x, uint32_t from_y, uint32_t to_x, uint32_t to_y) {
+    if (!display || !display->framebuffer) {
+        return;
+    }
+    if (from_x >= display->width
+        || from_y >= display->height
+        || to_x >= display->width
+        || to_y >= display->height) {
+        return;
+    }
+    
+    // Bresenham's line algorithm (https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm)
+    int32_t dx = abs(to_x - from_x);
+    int8_t sx = from_x < to_x ? 1 : -1;
+    int32_t dy = -abs(to_y - from_y);
+    int8_t sy = from_y < to_y ? 1 : -1;
+    int32_t error = dx + dy;
+    
+    while (true)
+    {
+        mgl_display_draw_pixel(display, from_x, from_y);
+        if (from_x == to_x && from_y == to_y) {
+            break;
+        }
+        int32_t e2 = 2 * error;
+        if (e2 >= dy) {
+            if (from_x == to_x) {
+                break;
+            }
+            error += dy;
+            from_x += sx;
+        }
+        if (e2 <= dx) {
+            if (from_y == to_y) {
+                break;
+            }
+            error += dx;
+            from_y += sy;
+        }
+    }
+}
+
+void mgl_display_draw_rect(mgl_display* display, uint32_t x, uint32_t y, uint32_t width, uint32_t height, bool fill) {
+    if (!display || !display->framebuffer) {
+        return;
+    }
+    if (x >= display->width
+        || y >= display->height
+        || width >= display->width
+        || height >= display->height
+        || (x+width) >= display->width
+        || (y+height) >= display->height) {
+        return;
+    }
+
+    if (fill) {
+        for (uint32_t i = x; i <= x+width; ++i) {
+            for (uint32_t j = y; j <= x+height; ++j) {
+                mgl_display_draw_pixel(display, i, j);
+            }
+        }
+    } else {
+        for (uint32_t i = x; i <= x+width; ++i) {
+            mgl_display_draw_pixel(display, i, y);
+            mgl_display_draw_pixel(display, i, y+height);
+        }
+        for (uint32_t j = y; j <= y+height; ++j) {
+            mgl_display_draw_pixel(display, x, j);
+            mgl_display_draw_pixel(display, x+width, j);
+        }
+    }
+}
+
+void mgl_display_fill(mgl_display* display, uint8_t value) {
+    if (display && display->framebuffer) {
+        memset(display->framebuffer, value, display->width * display->height * sizeof(uint8_t));
+    }
+}
