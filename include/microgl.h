@@ -1,3 +1,32 @@
+/**
+ *  microgl.h
+ *  @brief Microgl is an embedded graphics library for the Raspberry PI Pico.
+ *         It aims to provide access to different displays, such as for example sh1106 based displays. 
+ * 
+ *  Legal:
+ *    Copyright 2020 (c) 2020 Tim Teichmann and Raspberry Pi (Trading) Ltd.
+ *  
+ *    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
+ *    following conditions are met:
+ *    
+ *    1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following
+ *    disclaimer.
+ *    
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following
+ *    disclaimer in the documentation and/or other materials provided with the distribution.
+ *    
+ *    3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *    
+ *    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ *    INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ *    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ *    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ *    THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 #ifndef _MICROGL_H_
 #define _MICROGL_H_
 
@@ -11,7 +40,7 @@ extern "C" {
 #define MGL_SH1106_SET_DISPLAY _u(0xae)
 #define MGL_SH1106_SET_SCAN_DIR _u(0xc0)
 #define MGL_SH1106_SET_SEG_REMAP _u(0xa0)
-#define MGL_SH1106_LOW_COLUMN_ADDRESS _u(0x00)
+#define MGL_SH1106_LOW_COLUMN_ADDRESS _u(0x02)
 #define MGL_SH1106_HIGH_COLUMN_ADDRESS _u(0x10)
 #define MGL_SH1106_SET_PAGE_ADDRESS _u(0xB0)
 
@@ -63,6 +92,15 @@ typedef struct _mgl_display_ {
 } mgl_display;
 
 /**
+ *  mgl_display_write_cmd
+ * 
+ *  @brief Write a command to the display
+ *  NOTE: This method is not intended to be used by the end-user.
+ *        It is a simple abstraction of the i2c_write_blocking method from the pico stdlib.
+ */
+static void mgl_display_write_cmd(mgl_display* display, uint8_t command);
+
+/**
  *  mgl_display_init
  *
  *  @brief Initialize the display provided.
@@ -84,23 +122,6 @@ bool mgl_display_init(mgl_display* display);
 void mgl_display_destroy(mgl_display* display);
 
 /**
- *  mgl_display_write_cmd
- * 
- *  @brief Write a command to the display
- *  NOTE: This method is not intended to be used by the end-user.
- *        It is a simple abstraction of the i2c_write_blocking method from the pico stdlib.
- */
-void mgl_display_write_cmd(mgl_display* display, uint8_t command);
-
-/**
- *  mgl_display_write_data
- * 
- *  @brief Write buffer data to the display
- *  NOTE: This method is not intended to be used by the end-user.
- */
-void mgl_display_write_data(mgl_display* display, uint8_t* data, uint32_t data_len);
-
-/**
  *  mgl_display_set_state
  * 
  *  @brief Set the state of the display, aka. enable or disable it
@@ -113,6 +134,16 @@ void mgl_display_set_state(mgl_display* display, bool enabled);
  *  @brief Render the pixels from the framebuffer onto the screen
  */
 void mgl_display_render(mgl_display* display);
+
+/**
+ *  mgl_display_draw_pixel
+ *  
+ *  @brief Draw a pixel into the framebuffer
+ *  NOTE: Any drawing function (mgl_display_draw_...)
+ *        will simply change memory of the framebuffer.
+ *        Call mgl_display_render in order to make such changes visible on the display.
+ */
+void mgl_display_draw_pixel(mgl_display* display, uint32_t x, uint32_t y);
 
 #ifdef __cplusplus
 }

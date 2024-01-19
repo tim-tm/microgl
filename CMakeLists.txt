@@ -15,6 +15,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 pico_sdk_init()
 
+# Building the library
 add_library(microgl STATIC 
     src/microgl.c    
 )
@@ -26,6 +27,9 @@ target_link_libraries(microgl
     pico_stdlib 
     hardware_i2c
 )
+
+# Building the examples
+add_subdirectory(examples)
 
 include_directories(
     /usr/arm-none-eabi/include
