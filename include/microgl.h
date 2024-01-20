@@ -173,6 +173,30 @@ void mgl_display_draw_rect(mgl_display* display, uint32_t x, uint32_t y, uint32_
  */
 void mgl_display_fill(mgl_display* display, uint8_t value);
 
+/**
+ *  mgl_display_draw_char
+ *  
+ *  @brief Draw a char into the framebuffer
+ *  NOTE: Any drawing function (mgl_display_draw_...)
+ *        will simply change memory of the framebuffer.
+ *        Call mgl_display_render in order to make such changes visible on the display.
+ */
+void mgl_display_draw_char(mgl_display* display, uint32_t x, uint32_t y, char c);
+
+/**
+ *  mgl_display_draw_string
+ *  
+ *  @brief Draw a string into the framebuffer
+ *  NOTE: Only strings up to a size of 128 bytes are accepted,
+ *        if the provided string is longer than 128 bytes,
+ *        the first 128 bytes will be rendered.
+ * 
+ *        Any drawing function (mgl_display_draw_...)
+ *        will simply change memory of the framebuffer.
+ *        Call mgl_display_render in order to make such changes visible on the display.
+ */
+void mgl_display_draw_string(mgl_display* display, uint32_t x, uint32_t y, const char* str);
+
 #ifdef __cplusplus
 }
 #endif
