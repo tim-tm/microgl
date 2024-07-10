@@ -21,3 +21,13 @@ target_link_libraries(hellomicrogl
 pico_enable_stdio_usb(hellomicrogl 1)
 pico_enable_stdio_uart(hellomicrogl 0)
 pico_add_extra_outputs(hellomicrogl)
+
+add_executable(term
+    src/term.c
+)
+target_link_libraries(term 
+    microgl
+)
+pico_enable_stdio_usb(term 1)
+pico_enable_stdio_uart(term 0)
+pico_add_extra_outputs(term)

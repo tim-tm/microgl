@@ -252,10 +252,15 @@ void mgl_display_render(mgl_display* display) {
             mgl_display_write_cmd(display, MGL_SH1106_LOW_COLUMN_ADDRESS);
             mgl_display_write_cmd(display, MGL_SH1106_HIGH_COLUMN_ADDRESS);
             
-            uint8_t data[display->width+1] = {};
+            uint8_t *data = calloc(display->width+1, sizeof(uint8_t));
+            if (data == NULL) {
+                printf("Failed to render: No more memory!\n");
+                return;
+            }
             data[0] = 0x40;
             memcpy(&data[1], &display->framebuffer[display->width*i], (display->width+1));
             i2c_write_blocking(i2c_default, display->i2c_address, data, display->width+1, false);
+            free(data);
         }
     } break;
     default: {
