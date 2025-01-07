@@ -1,38 +1,37 @@
 /**
- *  microgl.h
- *  @brief Microgl is an embedded graphics library for the Raspberry PI Pico.
- *         It aims to provide access to different displays, such as for example sh1106 based displays. 
- * 
- *  BSD-3-Clause license:
- *    Copyright 2024 (c) Tim Teichmann and 2020 Raspberry Pi (Trading) Ltd.
- *  
- *    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
- *    following conditions are met:
+ *  mgl.h
+ *  @brief Microgl is an embedded graphics library.
+ *         It aims to provide access to different displays, such as, for example sh1106 based displays.
+ *
+ *  MIT License:
+ *    Copyright (c) 2025 Tim Teichmann
  *    
- *    1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following
- *    disclaimer.
+ *    Permission is hereby granted, free of charge, to any person obtaining a copy
+ *    of this software and associated documentation files (the "Software"), to deal
+ *    in the Software without restriction, including without limitation the rights
+ *    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *    copies of the Software, and to permit persons to whom the Software is
+ *    furnished to do so, subject to the following conditions:
  *    
- *    2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following
- *    disclaimer in the documentation and/or other materials provided with the distribution.
+ *    The above copyright notice and this permission notice shall be included in all
+ *    copies or substantial portions of the Software.
  *    
- *    3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *    
- *    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
- *    INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- *    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- *    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- *    THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *    SOFTWARE.
  */
-
-#ifndef _MICROGL_H_
-#define _MICROGL_H_
+#ifndef MICROGL_H
+#define MICROGL_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include "mgl_platform.h"
 
 // Display specific constants
 #define MGL_SH1106_SET_CONTRAST _u(0x81)
@@ -43,9 +42,6 @@ extern "C" {
 #define MGL_SH1106_LOW_COLUMN_ADDRESS _u(0x02)
 #define MGL_SH1106_HIGH_COLUMN_ADDRESS _u(0x10)
 #define MGL_SH1106_SET_PAGE_ADDRESS _u(0xB0)
-
-#include <stdint.h>
-#include <stdbool.h>
 
 // Every avalible core type
 typedef enum _mgl_display_core_ {
@@ -96,15 +92,13 @@ typedef struct _mgl_display_ {
  * 
  *  @brief Write a command to the display
  *  NOTE: This method is not intended to be used by the end-user.
- *        It is a simple abstraction of the i2c_write_blocking method from the pico stdlib.
  */
-static void mgl_display_write_cmd(mgl_display* display, uint8_t command);
+void mgl_display_write_cmd(mgl_display* display, uint8_t command);
 
 /**
  *  mgl_display_init
  *
  *  @brief Initialize the display provided.
- *  NOTE: This method initializes the pico stdio and i2c.
  *  Return value:
  *      true -- success (everything was initialized properly)
  *      false -- failure (error during initialization or provided display is NULL)
@@ -200,4 +194,4 @@ void mgl_display_draw_string(mgl_display* display, uint32_t x, uint32_t y, const
 #ifdef __cplusplus
 }
 #endif
-#endif // !_MICROGL_H_
+#endif // !MICROGL_H

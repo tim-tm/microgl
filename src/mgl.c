@@ -1,43 +1,37 @@
 /**
- *  microgl.c
- *  @brief Microgl is an embedded graphics library for the Raspberry PI Pico.
- *         It aims to provide access to different displays, such as for example sh1106 based displays. 
- * 
- *  BSD-3-Clause license:
- *    Copyright 2024 (c) Tim Teichmann and 2020 Raspberry Pi (Trading) Ltd.
- *  
- *    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
- *    following conditions are met:
+ *  mgl.c
+ *  @brief Microgl is an embedded graphics library.
+ *         It aims to provide access to different displays, such as, for example sh1106 based displays.
+ *
+ *  MIT License:
+ *    Copyright (c) 2025 Tim Teichmann
  *    
- *    1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following
- *    disclaimer.
+ *    Permission is hereby granted, free of charge, to any person obtaining a copy
+ *    of this software and associated documentation files (the "Software"), to deal
+ *    in the Software without restriction, including without limitation the rights
+ *    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *    copies of the Software, and to permit persons to whom the Software is
+ *    furnished to do so, subject to the following conditions:
  *    
- *    2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following
- *    disclaimer in the documentation and/or other materials provided with the distribution.
+ *    The above copyright notice and this permission notice shall be included in all
+ *    copies or substantial portions of the Software.
  *    
- *    3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *    
- *    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
- *    INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- *    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- *    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- *    THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *    SOFTWARE.
  */
-
-#include "microgl.h"
+#include "mgl.h"
 
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include "pico/stdlib.h"
-#include "hardware/i2c.h"
-#include "hardware/gpio.h"
 
-static const char default_font[128][8] = {
+static const uint8_t default_font[128][8] = {
     { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },   // U+0000 (nul)
     { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },   // U+0001
     { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },   // U+0002
@@ -168,10 +162,10 @@ static const char default_font[128][8] = {
     { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }    // U+007F
 };
 
-static void mgl_display_write_cmd(mgl_display* display, uint8_t command) {
+void mgl_display_write_cmd(mgl_display* display, uint8_t command) {
     if (display) {
         uint8_t buf[2] = {0x80, command};
-        i2c_write_blocking(i2c_default, display->i2c_address, buf, 2, false);
+        mgl_platform_i2c_write_blocking(display->i2c_address, buf, 2);
     }
 }
 
@@ -180,17 +174,7 @@ bool mgl_display_init(mgl_display* display) {
         return false;
     }
 
-    stdio_init_all();
-#ifndef i2c_default
-#warning "i2c_default was not defined => Pico has no i2c pins!"
-    return false;
-#else
-    i2c_init(i2c_default, display->i2c_baudrate);
-    gpio_set_function(display->sda_pin, GPIO_FUNC_I2C);
-    gpio_set_function(display->scl_pin, GPIO_FUNC_I2C);
-    gpio_pull_up(display->sda_pin);
-    gpio_pull_up(display->scl_pin);
-
+    mgl_platform_i2c_init(display->i2c_baudrate, display->sda_pin, display->scl_pin);
     if (!display->framebuffer) {
         display->framebuffer = malloc(display->width * display->height * sizeof(uint8_t));
         if (!display->framebuffer) {
@@ -202,7 +186,6 @@ bool mgl_display_init(mgl_display* display) {
     mgl_display_set_state(display, 1);
     mgl_display_render(display);
     return true;
-#endif
 }
 
 void mgl_display_destroy(mgl_display* display) {
@@ -217,7 +200,7 @@ void mgl_display_destroy(mgl_display* display) {
 void mgl_display_write_data(mgl_display* display, uint8_t data) {
     if (display) {
         uint8_t buf[2] = {0x40, data};
-        i2c_write_blocking(i2c_default, display->i2c_address, buf, 2, false);
+        mgl_platform_i2c_write_blocking(display->i2c_address, buf, 2);
     }
 }
 
@@ -259,7 +242,7 @@ void mgl_display_render(mgl_display* display) {
             }
             data[0] = 0x40;
             memcpy(&data[1], &display->framebuffer[display->width*i], (display->width+1));
-            i2c_write_blocking(i2c_default, display->i2c_address, data, display->width+1, false);
+            mgl_platform_i2c_write_blocking(display->i2c_address, data, display->width+1);
             free(data);
         }
     } break;
@@ -290,9 +273,9 @@ void mgl_display_draw_line(mgl_display* display, uint32_t from_x, uint32_t from_
     }
     
     // Bresenham's line algorithm (https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm)
-    int32_t dx = abs(to_x - from_x);
+    int32_t dx = to_x - from_x;
     int8_t sx = from_x < to_x ? 1 : -1;
-    int32_t dy = -abs(to_y - from_y);
+    int32_t dy = -(to_y - from_y);
     int8_t sy = from_y < to_y ? 1 : -1;
     int32_t error = dx + dy;
     
@@ -367,7 +350,7 @@ void mgl_display_draw_char(mgl_display* display, uint32_t x, uint32_t y, char c)
     uint8_t set = 0;
     for (uint8_t i = 0; i < 8; ++i) {
         for (uint8_t j = 0; j < 8; ++j) {
-            set = default_font[c][i] & 1 << j;
+            set = default_font[(uint8_t)c][i] & 1 << j;
             if (set) {
                 mgl_display_draw_pixel(display, x+j, y+i);
             }
