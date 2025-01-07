@@ -1,32 +1,34 @@
-# microgl
+# microgl (mgl)
 
-Microgl is an embedded graphics library for the Raspberry PI Pico.
-It aims to provide access to different displays, such as for example sh1106 based displays.
+Microgl is an embedded graphics library.
+It aims to provide access to different displays and embedded devices.
 
 ## Support
 
 Supported displays:
-
--   sh1106
+- sh1106
 
 In progress:
+- none
 
--   none
+Supported devices:
+- none
+
+In progress:
+- RPI Pico
 
 ## Getting started
 
 Building:
 
 ```sh
-cmake -B build
+make
 ```
 
 ```sh
-cmake --build build
+make install
 ```
-
-The static library will be located at build/libmicrogl.a
 
 ## License
 
-In order to match the license of the [pico-sdk](https://github.com/raspberrypi/pico-sdk), microgl is licensed under the BSD-3-Clause.
+Microgl is licensed under the [MIT-license](https://github.com/tim-tm/microgl/blob/main/LICENSE)
